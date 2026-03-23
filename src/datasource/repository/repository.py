@@ -1,11 +1,11 @@
-from domain.model.model import Game
-from ..mapper import GameMapper
+from domain.model.game import Game
+from datasource.mapper import GameMapper
 from uuid import uuid4
 
 class Repository:
-    def __init__(self):
+    def __init__(self, mapper:GameMapper):
         self._storage = {}
-        self._mapper = GameMapper()
+        self._mapper = mapper 
 
     def save(self, game:Game):
         g = self._mapper.to_entity(game)

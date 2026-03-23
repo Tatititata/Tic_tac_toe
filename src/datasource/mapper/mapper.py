@@ -1,5 +1,5 @@
 from datasource.model.model import GameEntity
-from domain.model.model import Game
+from domain.model.game import Game
 
 
 class GameMapper:

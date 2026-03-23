@@ -1,5 +1,5 @@
-from .model.model import Game, GameField
-from .service.service import Service
-from .constants.constants import Responce
+from .model import Game, GameField
+from .service import Service
+from .constants import Responce, TOP, DIV, BOT
 
-__all__ = ['Game', 'GameField', 'Service', 'Responce']
+__all__ = ['Game', 'GameField', 'Service', 'Responce', 'TOP', 'DIV', 'BOT']

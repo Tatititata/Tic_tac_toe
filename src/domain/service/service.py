@@ -1,4 +1,4 @@
-from domain.model.model import GameField
+from domain.model.game import GameField
 from domain.constants.constants import Responce
 
 

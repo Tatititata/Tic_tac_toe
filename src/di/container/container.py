@@ -1,9 +1,8 @@
-from datasource import Repository
+from datasource import Repository, GameMapper
 from domain import Service
-from web import WebMapper
+from web import WebMapper, Module, Route
 from flask import Flask
-from web import Module
-from web.route import Route
+
 
 
 
@@ -12,12 +11,13 @@ class Container:
     _module: Module | None = None
     _repository: Repository | None = None
     _web_mapper: WebMapper | None = None
+    _game_mapper: GameMapper | None = None
     _service: Service | None = None
 
     @classmethod
     def repo(cls):
         if cls._repository is None:
-            cls._repository = Repository()
+            cls._repository = Repository(cls.game_mapper())
         return cls._repository
 
     @classmethod
@@ -44,7 +44,13 @@ class Container:
         if cls._web_mapper is None:
             cls._web_mapper = WebMapper()
         return cls._web_mapper
-    
+
+    @classmethod
+    def game_mapper(cls):
+        if cls._game_mapper is None:
+            cls._game_mapper = GameMapper()
+        return cls._game_mapper
+
     @classmethod
     def service(cls):
         if cls._service is None:

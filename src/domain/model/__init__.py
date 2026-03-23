@@ -1,5 +1,5 @@
 
-# from .model import Game
-# from .model import GameField
+from .game import Game
+from .game_field import GameField
 
-# __all__ = [GameField, Game]
+__all__ = [GameField, Game]

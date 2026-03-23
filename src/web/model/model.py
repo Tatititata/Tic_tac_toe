@@ -1,19 +1,8 @@
 from domain.constants.constants import *
 
-class NewGame:
-    def __init__(self, id):
-        self._id = id
 
-    def to_dict(self):
-        return {'id': self._id}
-
-    def to_str(self):      
-        line = f'║   ║   ║   ║\n'
-        return 'id: ' + self._id + '\n' + TOP + line + DIV + line + DIV + line + BOT      
-
-
-class OldGame:
-    def __init__(self, id, field, result=None):
+class WebGame:
+    def __init__(self, id, field=None, result=None):
         self._id = id
         self._field = field.to_list()
         self._result = result

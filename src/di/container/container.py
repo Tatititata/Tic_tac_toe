@@ -1,4 +1,4 @@
-from datasource import Repository, GameMapper
+from datasource import Repository, GameMapper, Database, Schema
 from domain import Service
 from web import WebMapper, Module, Route
 from flask import Flask
@@ -6,19 +6,31 @@ from flask import Flask
 
 
 
+
+
 class Container:
     _app: Flask | None = None
     _module: Module | None = None
-    _repository: Repository | None = None
+    _repo: Repository | None = None
+    _database = Database | None = None
     _web_mapper: WebMapper | None = None
     _game_mapper: GameMapper | None = None
     _service: Service | None = None
 
     @classmethod
     def repo(cls):
-        if cls._repository is None:
-            cls._repository = Repository(cls.game_mapper())
-        return cls._repository
+        if cls._repo is None:
+            game_mapper = cls.game_mapper()
+            engine = cls._database().engine()
+            Schema.init(engine)
+            cls._repo = Repository(game_mapper, engine)
+        return cls._repo
+    
+    @classmethod
+    def database(cls):
+        if cls._database is None:
+            cls._database = Database()
+        return cls._database
 
     @classmethod
     def module(cls):

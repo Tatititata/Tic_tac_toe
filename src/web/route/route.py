@@ -20,8 +20,8 @@ class Route:
 
     def create_game(self):
         id = self._repository.create()
-        id = self._web_mapper.new_game_to_client(id)
-        return id
+        responce = self._web_mapper.new_game_to_client(id)
+        return responce
     
     def make_move(self, id):
         move = request.get_data(as_text=True)

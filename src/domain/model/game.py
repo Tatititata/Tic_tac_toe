@@ -2,14 +2,13 @@ from .game_field import GameField
 
 class Game:
 
-    @classmethod
-    def from_dict(cls, d:dict):
-        field = GameField.from_list(d.get('field', []))
-        return cls(d.get('id'), field)
+    def __init__(self, d:dict):
+        self._id = d.get('id')
+        self._field = GameField.from_list(d.get('field', []))
+        self._player_o_id = d.get('player_o_id')
+        self._player_x_id = d.get('player_x_id')
+        self._winner = d.get('winner')
 
-    def __init__(self, id, field:GameField=None):
-        self._id = id
-        self._field = field if field else GameField()
     
     @property
     def field(self):

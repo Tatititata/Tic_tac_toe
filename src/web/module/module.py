@@ -5,10 +5,7 @@ class Module:
         self._route = route
 
     def register(self):
-        # repo = Container.repository()
-        # web_mapper = Container.web_mapper()
-        # service = Container.service()
-        # route = Route(repo, web_mapper, service)
+
         self._app.add_url_rule('/', 'hello', self._route.shake_hands, methods=['GET'])
         self._app.add_url_rule('/game', 'create_game', self._route.create_game, methods=['POST'])
         self._app.add_url_rule('/<id>', 'make_move', self._route.make_move, methods=['POST'])

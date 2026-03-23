@@ -130,3 +130,5 @@ Mkfile.old
 Makefile.old
 dkms.conf
 
+*pycache*
+*venv*

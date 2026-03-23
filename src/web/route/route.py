@@ -1,10 +1,10 @@
-from datasource import Repository
 from flask import request, abort
 from domain.constants.constants import *
 
+
 class Route:
-    def __init__(self, repository:Repository, web_mapper, service):
-        self._repository = repository
+    def __init__(self, repo, web_mapper, service):
+        self._repository = repo
         self._web_mapper = web_mapper
         self._service = service
 

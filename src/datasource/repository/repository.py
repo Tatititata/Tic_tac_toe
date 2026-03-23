@@ -3,9 +3,9 @@ from ..mapper import GameMapper
 from uuid import uuid4
 
 class Repository:
-    def __init__(self, mapper:GameMapper):
+    def __init__(self):
         self._storage = {}
-        self._mapper = mapper
+        self._mapper = GameMapper()
 
     def save(self, game:Game):
         g = self._mapper.to_entity(game)

@@ -1,13 +1,11 @@
-from domain.model.game import GameField
+from domain.model.game_field import GameField
 from domain.constants.constants import Responce
 
 
 
-class Service:
+class GameLogic:
     _d = {'O':'X', 'X':'O'}
     
-
-
     # @staticmethod
     def winner(self, game_field:GameField):
         f = game_field

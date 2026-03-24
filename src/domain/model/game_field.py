@@ -3,7 +3,7 @@ from domain.constants.constants import TOP, DIV, BOT
 class GameField:
 
     @classmethod
-    def from_list(cls, l:list):
+    def from_list(cls, l:list | str):
         obj = cls()
         for i, sign in enumerate(l):
             if sign != ' ':
@@ -30,15 +30,13 @@ class GameField:
     def __delitem__(self, pos):
         if 0 <= pos < len(self._field):
             self._field[pos] = ' '
-    
+
     @property
     def extra(self):
         return sum(1 for i in self._field if i is None)
               
     def full(self):
         return all(map(lambda x: x != ' ', self._field))
-
-
 
     def __str__(self):
         f = self._field         
@@ -47,10 +45,11 @@ class GameField:
         line3 = f'║ {f[6]} ║ {f[7]} ║ {f[8]} ║\n'
         return  TOP + line1 + DIV + line2 + DIV + line3 + BOT
 
-
     def to_list(self):
         return [i for i in self._field]
 
+    def to_str(self):
+        return ''.join(self._field)
 
 if __name__ == '__main__':
     pass

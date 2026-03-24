@@ -1,3 +1,3 @@
-from .model import NewGame, WebGame
+from .web_game import NewGame, WebGame
 
 __all__ = ['WebGame']

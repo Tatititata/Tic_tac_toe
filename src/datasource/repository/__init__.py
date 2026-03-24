@@ -1,1 +1,1 @@
-from .repository import Repository
+from .game_repository import GameRepository

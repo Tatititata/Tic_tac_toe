@@ -1,1 +1,1 @@
-from .mapper import GameMapper
+from .game_mapper import GameMapper

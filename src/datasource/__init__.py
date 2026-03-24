@@ -1,6 +1,6 @@
 from .mapper import GameMapper
 from .model import GameEntity
-from .repository import Repository
+from .repository import GameRepository
 from .database import Database, Schema
 
-__all__ =['GameMapper', 'GameEntity', 'Repository', 'Database', 'Schema']
+__all__ =['GameMapper', 'GameEntity', 'GameRepository', 'Database', 'Schema']

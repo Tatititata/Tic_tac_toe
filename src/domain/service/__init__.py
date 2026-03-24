@@ -1,2 +1,3 @@
-from .service import Service
-__all__ = [Service]
+from .game_service import GameService
+from .user_service import UserService
+__all__ = ['GameService', 'UserService']

@@ -1,5 +1,6 @@
 
 from .game import Game
-from .game_field import GameField
+from .user import User
+from .game_logic import GameLogic
 
-__all__ = [GameField, Game]
+__all__ = ['Game', 'User', 'GameLogic']

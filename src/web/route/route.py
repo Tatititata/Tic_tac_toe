@@ -1,13 +1,18 @@
 from flask import request, abort
-from domain.constants.constants import *
+from domain.constants.constants import Responce
 from web.mapper import WebMapper
 
 
 class Route:
     def __init__(self, repo, web_mapper:WebMapper, service):
-        self._repository = repo
+        self._user_repo = repo.user_repo()
+        self._game_repo = repo.game_repo()
         self._web_mapper = web_mapper
         self._service = service
+
+
+
+
 
     def shake_hands(self):
         return self._web_mapper.shake_hands()

@@ -3,7 +3,7 @@ from domain.model import Game
 
 class GameService:
     def __init__(self, game_repo):
-        self._user_repo = game_repo
+        self._game_repo = game_repo
 
     def create(self, player_o_id, player_x_id):
         uid = str(uuid4())
@@ -12,6 +12,5 @@ class GameService:
             player_o_id=player_o_id,
             player_x_id=player_x_id
         )
-
-
+        self._game_repo.register(game)
         return uid

@@ -102,7 +102,7 @@ if __name__ == '__main__':
     
     while True:
         print(g)
-        winner = Service.winner(g)
+        winner = GameLogic.winner(g)
         if winner == -1:
             print('No winner')
             break
@@ -118,7 +118,7 @@ if __name__ == '__main__':
             g[pos] = 'O'
         else:
             # print(f'player = {player}')
-            n = Service.next_move(g)
+            n = GameLogic.next_move(g)
             print(n)
             g[n] = 'X'
-        player = Service._d[player]
+        player = GameLogic._d[player]

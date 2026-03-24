@@ -1,20 +1,8 @@
 from web.model import WebGame
+from domain import TOP, DIV, BOT
 
 
 class WebMapper:
-    # def new_game_to_client(self, uid):
-    #     return NewGame(uid).to_dict()
-    
-
-    # def not_valid_move_to_client(self, uid, game_field, move):
-    #     d = OldGame(uid, game_field).to_dict()
-    #     d['error'] = 'Invalid move ' + move
-    #     return d
-
-    # def game_field(self, uid, game_field, result):
-    #     return OldGame(uid, game_field, result).to_dict()
-    
-
 
     def new_game_to_client(self, uid):
         return WebGame(uid).to_str()

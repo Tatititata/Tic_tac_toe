@@ -1,13 +1,16 @@
-from datasource.model.user_model import UserModel
+
 from domain import User
 
 
 class UserMapper:
 
-    def to_entity(self, user:User):
-        u = user.to_dict()
-        return UserModel.from_dict(u)
+    def to_repo(self, user:User):
+        return user.to_dict()
     
-    def to_domain(self, user:UserModel):
-        u = user.to_dict()
-        return User.from_dict(u)
+    def from_repo_to_user(self, row):
+        user = {
+                'uid': row.uid,
+                'login': row.login,
+                'password_hash': row.password_hash
+                }
+        return User.from_dict(user)

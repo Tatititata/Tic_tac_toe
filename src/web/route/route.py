@@ -1,42 +1,16 @@
-from flask import request, abort
-from domain.constants.constants import Responce
-from web.mapper import WebMapper
-
+from .game_route import GameRoute
+from .user_route import UserRoute
+from datasource import Repository
+from domain import Service
 
 class Route:
-    def __init__(self, repo, web_mapper:WebMapper, service):
-        self._user_repo = repo.user_repo()
-        self._game_repo = repo.game_repo()
-        self._web_mapper = web_mapper
-        self._service = service
+    def __init__(self, repo:Repository, web_mapper, service:Service):
+        self._user_route = UserRoute(repo, web_mapper, service)
+        self._game_route = GameRoute(repo, web_mapper, service)
 
-
-
-
-
-    def shake_hands(self):
-        return self._web_mapper.shake_hands()
-
-    def create_game(self):
-        uid = self._repository.create()
-        responce = self._web_mapper.new_game_to_client(uid)
-        return responce
+    def user_route(self):
+        return self._user_route
     
-    def make_move(self, uid):
-        move = request.get_data(as_text=True)
-        game = self._repository.find(uid)
-        if game is None:
-            abort(404, description="Game has ended or never existed")
-        else:
-            result = self._service.make_turn(game.field, move)
-            if result == Responce.NOT_VALID:
-                return self._web_mapper.not_valid_move_to_client(uid, game.field, move)
-            else:
-                if result != Responce.GAME:
-                    self._repository.remove(game)
-                else:
-                    self._repository.save(game)
-                return self._web_mapper.game_field(uid, game.field, result)
-
-    def rep_listing(self):
-        return self._repository.storage
+    def game_route(self):
+        return self._game_route
+    

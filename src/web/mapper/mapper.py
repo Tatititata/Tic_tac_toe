@@ -1,26 +1,29 @@
 from web.model import WebGame
 from domain import TOP, DIV, BOT
-
+# 'lsof -i :5000\n'
 
 class WebMapper:
 
-    def new_game_to_client(self, uid):
-        return WebGame(uid).to_str()
-    
+    def game_to_client(self, game):
+        return WebGame(game).to_dict()
 
-    def not_valid_move_to_client(self, uid, game_field, move):
-        d = WebGame(uid, game_field).to_str()
-        return d + 'Invalid move ' + move + '\n'
+    def not_valid_move_to_client(self, game, move):
+        d = WebGame(game).to_dict()
+        d['move'] = move
+        return d 
 
     def game_field(self, uid, game_field, result):
         return WebGame(uid, game_field, result).to_str()
     
     def shake_hands(self):
-        line1 = '║ 1 ║ 2 ║ 3 ║   O = player\n'
-        line2 = '║ 4 ║ 5 ║ 6 ║   X = server\n'
-        line3 = '║ 7 ║ 8 ║ 9 ║\n'
-        s = 'listing lsof -i :5000\n'
-        s = ''
-        s += 'new game: curl -X POST http://<ip address>/game\n'
-        s += 'place sign: curl -X POST http://<ip address>/<game uid> -d <1 to 9>\ngame field:\n'
-        return s + TOP + line1 + DIV + line2 + DIV + line3 + BOT
+        return  {
+            "message": "Welcome to Tic-Tac-Toe API",
+            "endpoints": {
+                "register": {"method": "POST", "url": "/auth/register"},
+                "login": {"method": "POST", "url": "/auth/login"},
+                "create_game": {"method": "POST", "url": "/game"},
+                "make_move": {"method": "POST", "url": "/game/{game_id}"},
+                "available_games": {"method": "GET", "url": "/games/available"},
+                "join_game": {"method": "POST", "url": "/game/{game_id}/join"}
+                }
+            }

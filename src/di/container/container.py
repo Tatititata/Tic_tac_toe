@@ -12,7 +12,7 @@ class Container:
     _app: Flask | None = None
     _module: Module | None = None
     _repo:Repository | None = None
-    _database = Database | None = None
+    _database: Database | None = None
     _web_mapper: WebMapper | None = None
     _mapper: Mapper | None = None
     _service: Service | None = None
@@ -21,7 +21,7 @@ class Container:
     def repo(cls):
         if cls._repo is None:
             mapper = cls.mapper()
-            engine = cls._database().engine()
+            engine = cls.database().engine()
             Schema.init(engine)
             cls._repo = Repository(engine, mapper)
         return cls._repo
@@ -35,14 +35,9 @@ class Container:
     @classmethod
     def module(cls):
         if cls._module is None:
-            cls._module = Module(
-                app=cls.app(),
-                route=Route(
-                    cls.repo(),
-                    cls.web_mapper(),
-                    cls.service()
-                )
-            )
+            app = cls.app()
+            route = Route(cls.repo(), cls.web_mapper(), cls.service())
+            cls._module = Module(app, route)
         return cls._module
     
     @classmethod
@@ -66,10 +61,10 @@ class Container:
     @classmethod
     def service(cls):
         if cls._service is None:
-            cls._service = Service()
+            cls._service = Service(cls._repo)
         return cls._service
 
     @classmethod
     def run(cls):
         cls.module().register()
-        cls.app().run()
+        cls.app().run(debug=True)

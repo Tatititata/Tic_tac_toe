@@ -1,13 +1,14 @@
-from domain.constants.constants import TOP, DIV, BOT
+from domain.constants import TOP, DIV, BOT
 
 class GameField:
+
 
     @classmethod
     def from_list(cls, l:list | str):
         obj = cls()
-        for i, sign in enumerate(l):
+        for idx, sign in enumerate(l):
             if sign != ' ':
-                obj.place_sign(i, sign)
+                obj.place_sign(idx, sign)
         return obj
 
     def __init__(self):
@@ -19,7 +20,7 @@ class GameField:
     def __getitem__(self, pos):
         if 0 <= pos < len(self._field):
             return self._field[pos]
-
+        
     def place_sign(self, pos, sign):
         if 0 <= pos < len(self._field) and self._field[pos] == ' ' and sign in 'XO':
             self._field[pos] = sign
@@ -33,10 +34,21 @@ class GameField:
 
     @property
     def extra(self):
-        return sum(1 for i in self._field if i is None)
+        return sum(1 for i in self._field if i == ' ')
               
     def full(self):
         return all(map(lambda x: x != ' ', self._field))
+
+    @property
+    def quantity_OX(self):
+        sum_o = 0
+        sum_x = 0
+        for i in self._field:
+            if i == 'O':
+                sum_o += 1
+            elif i == 'X':
+                sum_x += 1
+        return sum_o, sum_x
 
     def __str__(self):
         f = self._field         
@@ -49,6 +61,7 @@ class GameField:
         return [i for i in self._field]
 
     def to_str(self):
+        return str(self)
         return ''.join(self._field)
 
 if __name__ == '__main__':

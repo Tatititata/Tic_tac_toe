@@ -1,36 +1,46 @@
 from domain import Game
-from datasource.mapper import GameMapper
 from sqlalchemy import text
 
 class GameRepository:
-    def __init__(self, engine, mapper:GameMapper):
+    def __init__(self, engine, mapper):
         self._engine = engine
         self._mapper = mapper 
 
-    def save(self, game:Game):
+    def save_move(self, game:Game):
         game_dict = self._mapper.to_repo(game)
         with self._engine.connect() as conn:
             conn.execute(text('''
             UPDATE games
-            SET(field = :field, winner_id = :winner_id, status = :status)
+            SET field = :field, winner_id = :winner_id, status = :status 
             WHERE uid = :uid
             '''),
             game_dict
             )
             conn.commit()
 
-    def find(self, uid:str):
+    def save_x_player(self, game:Game):
+        game_dict = self._mapper.to_repo(game)
+        with self._engine.connect() as conn:
+            conn.execute(text('''
+            UPDATE games
+            SET player_x_id = :player_x_id, status = :status 
+            WHERE uid = :uid
+            '''),
+            game_dict
+            )
+            conn.commit()
+
+    def find(self, game_id:str):
         with self._engine.connect() as conn:
             row = conn.execute(text('''
             SELECT * FROM games
             WHERE uid = :uid
             '''),
             {
-            'uid': uid
+            'uid': game_id
             }).fetchone()
             if row:
-                game = self._mapper.from_repo_to_game(row)
-                return game
+                return self._mapper.from_repo_to_game(row)
             return None
 
 
@@ -48,3 +58,18 @@ class GameRepository:
             conn.commit()
         return 
 
+    def get_games_for_user(self, user_id):
+        with self._engine.connect() as conn:
+            rows = conn.execute(text('''
+            SELECT * FROM games
+            WHERE status != 'finished' 
+            AND (player_o_id = :user_id OR  player_x_id = :user_id OR
+            (player_o_id != :user_id AND player_x_id IS NULL)
+            )
+            '''),
+            {
+            'user_id': user_id
+            }).fetchall()
+            if rows:
+                return [self._mapper.from_repo_to_game(row) for row in rows]
+            return []

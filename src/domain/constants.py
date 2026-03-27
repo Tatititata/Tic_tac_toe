@@ -2,10 +2,10 @@ from enum import Enum
 
 class Responce(Enum):
     NOT_VALID = 0
-    PLAYER = 'O'
-    SERVER = 'X'
+    O_PLAYER = 'O'
+    X_PLAYER = 'X'
     TIE = 3
-    GAME = 4
+    IN_PROGRESS = 4
 
 TOP = '╔═══╦═══╦═══╗\n'
 DIV = '╠═══╬═══╬═══╣\n'

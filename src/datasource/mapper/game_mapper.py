@@ -1,4 +1,4 @@
-from domain.model.game import GameModel
+
 from domain import Game
 
 

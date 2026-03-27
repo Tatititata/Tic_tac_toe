@@ -19,7 +19,7 @@ class Schema:
                     player_o_id VARCHAR(100),
                     player_x_id VARCHAR(100),
                     winner_id VARCHAR(100),
-                    status VARCHAR(50) DEFAULT 'waiting',  -- waiting, in_progress, finished, draw
+                    status VARCHAR(50) DEFAULT 'waiting',  -- waiting, in_progress, finished
                     created_at TIMESTAMP DEFAULT NOW()
                 )''')
             )

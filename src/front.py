@@ -130,8 +130,11 @@ def front():
                     print(f'{idx}. {g}')
                 try:
                     num = int(input("Choose game number: "))
+                    # game_id = join_game(user_login, user_password, 'f51d0e64-2413-4737-b12b-e6170e8e8a01')
                     game_id = join_game(user_login, user_password, games[num][0])
                     print(game_id)
+                    
+                    # play_game('f51d0e64-2413-4737-b12b-e6170e8e8a01', user_login, user_password)
                     play_game(game_id, user_login, user_password)
                 except:
                     print("Invalid number")

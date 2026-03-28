@@ -33,13 +33,17 @@ class GameService:
         o, x =  game.field.quantity_OX
 
         if uid == pl_x:
-            if o != x + 1 or not game.field.place_sign(move - 1, 'X'):
-                raise GameError.InvalidMove(f' player_x {move}')
+            if o != x + 1:
+                raise GameError.InvalidMove('You are X player. It\'s player O turn now.')
+            elif not game.field.place_sign(move - 1, 'X'):
+                raise GameError.InvalidMove()
         elif uid == pl_o:
-            if o != x or not game.field.place_sign(move - 1, 'O'):
-                    raise GameError.InvalidMove(f' player_o {move}')
+            if o != x:
+                raise GameError.InvalidMove('You are O player. It\'s player X turn now.')
+            elif not game.field.place_sign(move - 1, 'O'):
+                raise GameError.InvalidMove()
         else:
-            raise GameError.InvalidMove(f' player is not valid')
+            raise GameError.InvalidMove(f'Player is not valid')
         
         self._check_winner(game)
 

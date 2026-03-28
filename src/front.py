@@ -1,6 +1,37 @@
-from domain.model.game_field import GameField
 import requests
 import base64
+
+class GameField:
+
+    @classmethod
+    def from_list(cls, l:list | str):
+        obj = cls()
+        for idx, sign in enumerate(l):
+            if sign != ' ':
+                obj.place_sign(idx, sign)
+        return obj
+    
+    def place_sign(self, pos, sign):
+        if 0 <= pos < len(self._field) and self._field[pos] == ' ' and sign in 'XO':
+            self._field[pos] = sign
+            return True
+        else:
+            return False
+
+    def __init__(self):
+        self._field = [' '] * 9
+
+    def __str__(self):
+        TOP = '╔═══╦═══╦═══╗\n'
+        DIV = '╠═══╬═══╬═══╣\n'
+        BOT = '╚═══╩═══╩═══╝\n'
+        f = self._field         
+        line1 = f'║ {f[0]} ║ {f[1]} ║ {f[2]} ║\n'
+        line2 = f'║ {f[3]} ║ {f[4]} ║ {f[5]} ║\n'
+        line3 = f'║ {f[6]} ║ {f[7]} ║ {f[8]} ║\n'
+        return  TOP + line1 + DIV + line2 + DIV + line3 + BOT
+
+
 
 BASE_URL = "http://127.0.0.1:5000"
 
@@ -67,7 +98,7 @@ def user_info(user_login, user_password, uid):
     resp = requests.get(f"{BASE_URL}/user/{uid}", headers=headers)
     if resp.status_code == 201:
         user = resp.json()
-        print(f'User id: {user['uid']}, user login: {user['login']}')
+        print(f'User id: {user["uid"]}, user login: {user["login"]}')
     else:
         print("Error:", resp.json().get("error", resp.text))
 

@@ -14,7 +14,7 @@ class UserService:
         password_hash = sha256(password.encode()).hexdigest()
         user = User(uid, login, password_hash)
         self._user_repo.save(user)
-        return uid
+        return user
     
     def login(self, login, password):
         user = self._user_repo.find_by_login(login)
@@ -22,7 +22,13 @@ class UserService:
             raise ValueError('User not found')  
         
         password_hash = sha256(password.encode()).hexdigest()
-        if user._password_hash != password_hash:
+        if user.password_hash != password_hash:
             raise ValueError('Invalid password')  
         
-        return user._uid
+        return user
+    
+    def find(self, uid):
+        user = self._user_repo.find_by_id(uid)
+        if user is None:
+            raise ValueError('User not found')  
+        return user

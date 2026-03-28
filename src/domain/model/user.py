@@ -18,3 +18,11 @@ class User:
                 "login": self._login,
                 "password_hash": self._password_hash
                 }
+
+    @property
+    def password_hash(self):
+        return self._password_hash
+    
+    @property
+    def uid(self):
+        return self._uid

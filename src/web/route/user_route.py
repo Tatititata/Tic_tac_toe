@@ -1,11 +1,9 @@
 from flask import request, abort
 from domain import SignUpRequest, Service
-from datasource import Repository
 from web.mapper.mapper import WebMapper
 
 class UserRoute:
-    def __init__(self, repo:Repository, web_mapper:WebMapper, service:Service):
-        self._repo = repo
+    def __init__(self, web_mapper:WebMapper, service:Service):
         self._web_mapper = web_mapper
         self._service = service
 
@@ -15,22 +13,23 @@ class UserRoute:
             return {"error": "login and password required"}, 400
         login = data.get('login')
         password = data.get('password')
-
-        signup = SignUpRequest(login, password)
         try:
-            user_id = self._service.auth_service().register(signup)
-            return {"id": user_id}, 201
+            user = self._service.user_service().register(login, password)
+            return self._web_mapper.user_to_client(user), 201
         except Exception as e:
             return {"error": str(e)}, 400
         
     def login(self):
         try:
-            auth = request.authorization
-            if not auth:
-                raise ValueError('Authorization header required')
-            user_id = self._service.auth_service().authenticate(auth.username, auth.password)
-            return {"id": user_id}
+            user = self._service.auth_service().authenticate(request.authorization)
+            return self._web_mapper.user_to_client(user), 201
         except Exception as e:
             return {"error": str(e)}, 401
         
-    
+    def info(self, uid):
+        try:
+            self._service.auth_service().authenticate(request.authorization)
+            user = self._service.user_service().find(uid)
+            return self._web_mapper.user_to_client(user), 201
+        except Exception as e:
+            return {"error": str(e)}, 401

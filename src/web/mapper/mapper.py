@@ -11,9 +11,6 @@ class WebMapper:
         d = WebGame(game).to_dict()
         d['move'] = move
         return d 
-
-    def game_field(self, uid, game_field, result):
-        return WebGame(uid, game_field, result).to_str()
     
     def shake_hands(self):
         return  {
@@ -27,3 +24,10 @@ class WebMapper:
                 "join_game": {"method": "POST", "url": "/game/{game_id}/join"}
                 }
             }
+    
+    def user_to_client(self, user):
+        user = user.to_dict()
+        return {
+            'uid': user['uid'],
+            'login': user['login']
+        }

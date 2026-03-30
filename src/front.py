@@ -1,5 +1,5 @@
 import requests
-import base64
+users = {}
 
 class GameField:
 
@@ -43,20 +43,32 @@ def register(login, password):
         print("Error:", resp.json()["error"])
 
 def login(login, password):
-    auth = base64.b64encode(f"{login}:{password}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth}"}
-    resp = requests.post(f"{BASE_URL}/auth/login", headers=headers)
+    resp = requests.post(f"{BASE_URL}/auth/login", json={"login": login, "password": password})
     if resp.status_code == 201:
-        user_id = resp.json()["uid"]
-        print("Logged in:", user_id)
-        return user_id
+        resp = resp.json()
+        access_token = resp['access_token']
+        refresh_token = resp['refresh_token']
+        users[login] = [access_token, refresh_token]
+        print("Logged in:", login)
+    else:
+        print("Login error:", resp.json())
+
+
+def refresh_token(user_login):
+    token = users.get(user_login, [0, 0])[1]
+    resp = requests.post(f"{BASE_URL}/auth/refresh", json={"refresh_token": token})
+    if resp.status_code == 201:
+        resp = resp.json()
+        access_token = resp['access_token']
+        refresh_token = resp['refresh_token']
+        users[user_login] = [access_token, refresh_token]
+        print("Logged in:", user_login)
     else:
         print("Login error:", resp.json()["error"])
-        return None
 
-def create_game(login, password, type='bot'):
-    auth = base64.b64encode(f"{login}:{password}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth}"}
+
+def create_game(access_token, type='bot'):
+    headers = {"Authorization": f"Bearer {access_token}"}
     resp = requests.post(f"{BASE_URL}/game", json={"type": type}, headers=headers)
     if resp.status_code == 201:
         game = resp.json()
@@ -67,9 +79,8 @@ def create_game(login, password, type='bot'):
         print("Error:", resp.json().get("error", resp.text))
         return None
 
-def make_move(game_id, move, login, password):
-    auth = base64.b64encode(f"{login}:{password}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth}"}
+def make_move(game_id, move, access_token):
+    headers = {"Authorization": f"Bearer {access_token}"}
     resp = requests.post(f"{BASE_URL}/{game_id}", json={"move": move}, headers=headers)
     if resp.status_code == 200:
         game = resp.json()
@@ -79,32 +90,53 @@ def make_move(game_id, move, login, password):
         return game
     else:
         print("Error:", resp.json().get("error", resp.text))
-        return None
 
-def check_available(user_login, user_password):
-    auth = base64.b64encode(f"{user_login}:{user_password}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth}"}
+        return None
+    
+def me(access_token):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    resp = requests.get(f"{BASE_URL}/user/me", headers=headers)
+    if resp.status_code == 200:
+        return resp.json()
+    else:
+        # print("Error:", resp.json())
+        print(resp.text)
+        return []
+    
+def check_available(access_token):
+    headers = {"Authorization": f"Bearer {access_token}"}
     resp = requests.get(f"{BASE_URL}/games/available", headers=headers)
     if resp.status_code == 200:
         games = resp.json()
         return [[g['uid'], g['status']] for g in games]
     else:
-        print("Error:", resp.json().get("error", resp.text))
+        # print("Error:", resp.json())
+        print(resp.text)
         return []
-    
-def user_info(user_login, user_password, uid):
-    auth = base64.b64encode(f"{user_login}:{user_password}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth}"}
+
+def game_history(access_token):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    resp = requests.get(f"{BASE_URL}/games/history", headers=headers)
+    if resp.status_code == 200:
+        games = resp.json()
+        return [[g['uid'], g['winner_id'], g['status']] for g in games]
+    else:
+        # print("Error:", resp.json())
+        print(resp.text)
+        return []
+
+
+def user_info(access_token, uid):
+    headers = {"Authorization": f"Bearer {access_token}"}
     resp = requests.get(f"{BASE_URL}/user/{uid}", headers=headers)
-    if resp.status_code == 201:
+    if resp.status_code == 200:
         user = resp.json()
         print(f'User id: {user["uid"]}, user login: {user["login"]}')
     else:
         print("Error:", resp.json().get("error", resp.text))
 
-def join_game(user_login, user_password, game_id):
-    auth = base64.b64encode(f"{user_login}:{user_password}".encode()).decode()
-    headers = {"Authorization": f"Basic {auth}"}
+def join_game(access_token, game_id):
+    headers = {"Authorization": f"Bearer {access_token}"}
     resp = requests.post(f"{BASE_URL}/{game_id}/join", headers=headers)
     if resp.status_code == 200:
         game = resp.json()
@@ -115,7 +147,7 @@ def join_game(user_login, user_password, game_id):
         print("Error:", resp.json().get("error", resp.text))
         return None
 
-def play_game(game_id, user_login, user_password):
+def play_game(game_id, access_token):
     while True:
         move = input("Enter move (1-9) or q to quit: ")
         if move == 'q':
@@ -123,7 +155,7 @@ def play_game(game_id, user_login, user_password):
         try:
             move = int(move)
             if 0 < move < 10:
-                make_move(game_id, move, user_login, user_password)
+                make_move(game_id, move, access_token)
             else:
                 print("Invalid move")
         except ValueError:
@@ -132,6 +164,7 @@ def play_game(game_id, user_login, user_password):
 
 def front():
     print("=== Tic-Tac-Toe Console Client ===")
+
     user_login = None
     user_password = None
     string = '''
@@ -141,6 +174,9 @@ def front():
     4. Play game
     5. Login
     6. Create game
+    7. Refresh tokens
+    8. Game history
+    9. About me
     
     q to quit:
     '''
@@ -152,43 +188,53 @@ def front():
             user_password = input("Password: ")
             register(user_login, user_password)
         elif choice == '2':
-            games = check_available(user_login, user_password)
+            games = check_available(users.get(user_login, [0, 0])[0])
             print(*games, sep='\n')
         elif choice == '4':
-            games = check_available(user_login, user_password)
+            games = check_available(users.get(user_login, [0, 0])[0])
             if games:
                 for idx, g in enumerate(games):
                     print(f'{idx}. {g}')
                 try:
                     num = int(input("Choose game number: "))
                     # game_id = join_game(user_login, user_password, 'f51d0e64-2413-4737-b12b-e6170e8e8a01')
-                    game_id = join_game(user_login, user_password, games[num][0])
+                    game_id = join_game(users.get(user_login, [0, 0])[0], games[num][0])
                     print(game_id)
                     
                     # play_game('f51d0e64-2413-4737-b12b-e6170e8e8a01', user_login, user_password)
-                    play_game(game_id, user_login, user_password)
+                    play_game(game_id, users.get(user_login, [0, 0])[0])
                 except:
                     print("Invalid number")
             else:
-                print('No games abailable')
+                print('No games available')
         elif choice == 'q':
             break
         elif choice == '5':
             user_login = input("Login: ")
             user_password = input("Password: ")
             login(user_login, user_password)
+
         elif choice == '6':
             type = input("1 = human, 2 = bot: ")
             if type == '1':
                 type = 'human'
             else:
                 type = 'bot'
-            game_id = create_game(user_login, user_password, type)
-            play_game(game_id, user_login, user_password)
+            game_id = create_game(users.get(user_login, [0, 0])[0], type)
+            play_game(game_id, users.get(user_login, [0, 0])[0])
 
         elif choice == '3':
             uid = input("enter user id: ")
-            user_info(user_login, user_password, uid)
+            user_info(users.get(user_login, [0, 0])[0], uid)
+
+        elif choice == '7':
+            refresh_token(user_login)
+        elif choice == '0':
+            print(*users.items(), sep='\n')
+        elif choice == '8':
+            print(*game_history(users.get(user_login, [0, 0])[0]), sep='\n')
+        elif choice == '9':
+            print(me(users.get(user_login, [0, 0])[0]), sep='\n')
 
 if __name__ == "__main__":
     front()

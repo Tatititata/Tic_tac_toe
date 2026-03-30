@@ -1,5 +1,5 @@
-from flask import request, abort
-from domain import SignUpRequest, Service
+from flask import request
+from domain import Service
 from web.mapper.mapper import WebMapper
 
 class UserRoute:
@@ -21,15 +21,31 @@ class UserRoute:
         
     def login(self):
         try:
-            user = self._service.auth_service().authenticate(request.authorization)
-            return self._web_mapper.user_to_client(user), 201
+            data = request.get_json()
+            user_tokens = self._service.jwt_service().login(data)
+            return self._web_mapper.tokens_to_client(user_tokens), 201
+        except Exception as e:
+            return {"error": str(e)}, 401
+        
+    def refresh(self):
+        try:
+            user_tokens = self._service.jwt_service().refresh(request.get_json())
+            return self._web_mapper.tokens_to_client(user_tokens), 201
         except Exception as e:
             return {"error": str(e)}, 401
         
     def info(self, uid):
         try:
-            self._service.auth_service().authenticate(request.authorization)
+            self._service.jwt_service().validate(request)
             user = self._service.user_service().find(uid)
-            return self._web_mapper.user_to_client(user), 201
+            return self._web_mapper.user_to_client(user), 200
         except Exception as e:
             return {"error": str(e)}, 401
+    
+    def me(self):
+        try:
+            uid = self._service.jwt_service().validate(request)
+            return self._web_mapper.self_to_client(uid), 200
+        except Exception as e:
+            return {"error": str(e)}, 401
+

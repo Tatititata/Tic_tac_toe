@@ -2,9 +2,8 @@ from datasource import Repository, Mapper, Database, Schema
 from domain import Service
 from web import WebMapper, Module, Route
 from flask import Flask
-
-
-
+from flask_jwt_extended import JWTManager
+from datetime import timedelta
 
 
 
@@ -36,6 +35,10 @@ class Container:
     def app(cls):
         if cls._app is None:
             cls._app = Flask(__name__)
+            cls._app.config['JWT_SECRET_KEY'] = 'school21_suannefu-very_long_secret_key'
+            cls._app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=1)
+            cls._app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=1)
+            JWTManager(cls._app)
         return cls._app
     
     @classmethod

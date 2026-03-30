@@ -80,3 +80,11 @@ class GameService:
     def get_games_for_user(self, user_id):
         games = self._game_repo.get_games_for_user(user_id)
         return games
+    
+    def get_history(self, user_id):
+        games = self._game_repo.get_history(user_id)
+        return games
+
+    def get_history(self, limit):
+        lederboard = self._game_repo.get_lederboard(limit)
+        return self._game_mapper.lederboard_for_route(lederboard)

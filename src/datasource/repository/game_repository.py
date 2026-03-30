@@ -73,3 +73,51 @@ class GameRepository:
             if rows:
                 return [self._mapper.from_repo_to_game(row) for row in rows]
             return []
+        
+    def get_history(self, user_id):
+        with self._engine.connect() as conn:
+            rows = conn.execute(text('''
+            SELECT * FROM games
+            WHERE status = 'finished' 
+            AND (player_o_id = :user_id OR  player_x_id = :user_id)
+            '''),
+            {
+            'user_id': user_id
+            }).fetchall()
+            if rows:
+                return [self._mapper.from_repo_to_game(row) for row in rows]
+            return []
+        
+    def get_history(self, limit):
+        with self._engine.connect() as conn:
+            rows = conn.execute(text('''
+            select player, 
+                case 
+                    when (loss + tie) = 0 then 999999
+                    else win::float / (loss + tie)
+                end as ratio
+            from
+
+            (select ft.player, 
+            sum (case when player = winner_id then 1 else 0 end) as win,
+            sum (case when (player != winner_id and winner_id is not null) then 1 else 0 end) as loss,
+            sum (case when winner_id is null then 1 else 0 end) as tie
+
+            from
+            (select player_o_id as player, winner_id from games
+            where status = 'finished'
+            union all
+            select player_x_id as player, winner_id from games
+            where status = 'finished') as ft
+
+            group by player)
+
+            order by ratio desc
+            limit :limit
+            '''),
+            {
+            'limit': limit
+            }).fetchall()
+            if rows:
+                return rows
+            return []

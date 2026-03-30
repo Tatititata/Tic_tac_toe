@@ -35,12 +35,18 @@ Authenticates a user.
 - **URL:** /auth/login
 - **Method:** POST
 - **Headers:**
-    - Authorization: Basic <base64(login:password)>
-- **Request Body:** none
+    - Content-Type: application/json
+- **Request Body:**
+    json
+    {
+        "login": "string",
+        "password": "string"
+    }
 - **Success Response (200 OK):**
     json
     {
-        "id": "550e8400-e29b-41d4-a716-446655440000"
+        "refresh_token": "string",
+        "access_token": "string"
     }
 - **Error (401 Unauthorized):**
     json
@@ -50,7 +56,7 @@ Authenticates a user.
 - **Error (401 Unauthorized):**
     json
     {
-        "error": "authorization header required"
+        "error": "Invalid or expired token"
     }
     
 ## 3. Create Game
@@ -59,7 +65,7 @@ Creates a new game.
 - **URL:** /game
 - **Method:** POST
 - **Headers:**
-    - Authorization: Basic <base64(login:password)>
+    - Authorization: Bearer <access_token>
 - **Request Body:**
     json
     {
@@ -154,7 +160,7 @@ Returns list of games waiting for opponent.
 ## 7. Join Game
 Joins an existing game waiting for opponent.
 
-- **URL:** /game/{id}/join
+- **URL:** /{id}/join
 - **Method:** POST
 - **Headers:**
     - Authorization: Basic <base64(login:password)>

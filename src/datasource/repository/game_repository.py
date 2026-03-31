@@ -88,7 +88,7 @@ class GameRepository:
                 return [self._mapper.from_repo_to_game(row) for row in rows]
             return []
         
-    def get_history(self, limit):
+    def get_leaderboard(self, limit):
         with self._engine.connect() as conn:
             rows = conn.execute(text('''
             select player, 
@@ -119,5 +119,5 @@ class GameRepository:
             'limit': limit
             }).fetchall()
             if rows:
-                return rows
+                return self._mapper.leaderboard_for_client(rows)
             return []

@@ -125,6 +125,17 @@ def game_history(access_token):
         print(resp.text)
         return []
 
+def get_leaderboard(access_token, limit):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    resp = requests.get(f"{BASE_URL}/games/leaderboard", headers=headers, json={"limit": limit})
+    if resp.status_code == 200:
+        leaders = resp.json()
+        return leaders
+    else:
+        # print("Error:", resp.json())
+        print(resp.text)
+        return []
+
 
 def user_info(access_token, uid):
     headers = {"Authorization": f"Bearer {access_token}"}
@@ -177,7 +188,7 @@ def front():
     7. Refresh tokens
     8. Game history
     9. About me
-    
+    0. Leaderboard
     q to quit:
     '''
 
@@ -197,11 +208,8 @@ def front():
                     print(f'{idx}. {g}')
                 try:
                     num = int(input("Choose game number: "))
-                    # game_id = join_game(user_login, user_password, 'f51d0e64-2413-4737-b12b-e6170e8e8a01')
                     game_id = join_game(users.get(user_login, [0, 0])[0], games[num][0])
                     print(game_id)
-                    
-                    # play_game('f51d0e64-2413-4737-b12b-e6170e8e8a01', user_login, user_password)
                     play_game(game_id, users.get(user_login, [0, 0])[0])
                 except:
                     print("Invalid number")
@@ -229,12 +237,16 @@ def front():
 
         elif choice == '7':
             refresh_token(user_login)
-        elif choice == '0':
+        elif choice == 'u':
             print(*users.items(), sep='\n')
         elif choice == '8':
             print(*game_history(users.get(user_login, [0, 0])[0]), sep='\n')
         elif choice == '9':
             print(me(users.get(user_login, [0, 0])[0]), sep='\n')
+        elif choice == '0':
+            limit = int(input("enter limit: "))
+            print(*get_leaderboard(users.get(user_login, [0, 0])[0], limit), sep='\n')
+
 
 if __name__ == "__main__":
     front()

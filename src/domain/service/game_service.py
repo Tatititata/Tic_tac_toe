@@ -72,7 +72,9 @@ class GameService:
         
         pl_o, pl_x = game.players_OX
         
-        if pl_x is None and player_id != pl_o:
+        if pl_x is None:
+            if player_id == pl_o:
+                raise GameError.InvalidMove('You are in the game, wait for second player.')
             game.set_x_player(player_id)
             self._game_repo.save_x_player(game)
         return game
@@ -85,6 +87,6 @@ class GameService:
         games = self._game_repo.get_history(user_id)
         return games
 
-    def get_history(self, limit):
-        lederboard = self._game_repo.get_lederboard(limit)
-        return self._game_mapper.lederboard_for_route(lederboard)
+    def get_leaderboard(self, limit):
+        leaderboard = self._game_repo.get_leaderboard(limit)
+        return leaderboard

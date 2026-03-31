@@ -14,5 +14,5 @@ class GameMapper:
         return Game.from_dict(row._asdict())
     
     @staticmethod
-    def lederboard_for_client(lederboard):
-        return [{"player": row[0], "total": row[1], "wins": row[2], "draws": row[3]} for row in lederboard]
+    def leaderboard_for_client(leaderboard):
+        return [{"player": row[0], "ratio": row[1] } for row in leaderboard]

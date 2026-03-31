@@ -17,6 +17,7 @@ union all
 select player_x_id as player, winner_id from games
 where status = 'finished') as ft
 
-group by player)
+group by player
+)
 
 order by ratio desc;

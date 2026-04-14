@@ -36,7 +36,7 @@ class Container:
         if cls._app is None:
             cls._app = Flask(__name__)
             cls._app.config['JWT_SECRET_KEY'] = 'school21_suannefu-very_long_secret_key'
-            cls._app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=1)
+            cls._app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=10)
             cls._app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=1)
             JWTManager(cls._app)
         return cls._app

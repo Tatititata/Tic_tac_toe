@@ -177,7 +177,7 @@ curl -X POST http://localhost:5000/<game_id>/join \
 curl -X POST http://localhost:5000/<game_id> \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
-  -d '{"row": 1, "col": 1}'
+  -d '{1}'
 ```
 ### Получение истории игр
 ```bash
